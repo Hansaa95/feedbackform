@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ප්‍රතිචාර සංඛ්‍යාන</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #fafafa;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+  }
+  h1 {
+    margin-bottom: 1.5rem;
+  }
+  .feedback-stats {
+    display: flex;
+    gap: 40px;
+  }
+  .stat-item {
+    background: white;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
+    text-align: center;
+    width: 130px;
+  }
+  .emoji {
+    font-size: 4rem;
+  }
+  .label {
+    margin-top: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  .count {
+    margin-top: 0.3rem;
+    font-size: 1rem;
+    color: #666;
+  }
+  
+   #stats-link {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    font-size: 0.9rem;
+    color: #999;
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    user-select: none;
+</style>
+</head>
+<body>
+
+<h1>ඔබට මේ වන විට ලැබී ඇති ප්‍රතිචාර</h1>
+
+<div class="feedback-stats" id="stats-container">
+  <!-- Stats will be populated here -->
+</div>
+
+<script>
+  // Mapping Sinhala feedback words to emoji and label
+  const feedbackMap = {
+    "නියමයි": {emoji: "😍", label: "නියමයි"},
+    "හොඳයි": {emoji: "🙂", label: "හොඳයි"},
+    "එපා උනා": {emoji: "🥱", label: "එපා උනා"},
+    "හොඳ නැහැ": {emoji: "😣", label: "හොඳ නැහැ"}
+  };
+
+  async function fetchStats() {
+    try {
+      const res = await fetch('get-feedback-counts.php');
+      if (!res.ok) throw new Error('Network error');
+
+      const data = await res.json();
+      const container = document.getElementById('stats-container');
+      container.innerHTML = '';
+
+      for (const [word, info] of Object.entries(feedbackMap)) {
+        const count = data[word] || 0;
+        const div = document.createElement('div');
+        div.className = 'stat-item';
+        div.innerHTML = `
+          <div class="emoji">${info.emoji}</div>
+          <div class="label">${info.label}</div>
+          <div class="count">${count} ප්‍රතිචාර</div>
+        `;
+        container.appendChild(div);
+      }
+    } catch (err) {
+      console.error(err);
+      document.getElementById('stats-container').textContent = 'දත්ත ලබා ගැනීමට අසමත් විය.';
+    }
+  }
+
+  fetchStats();
+</script>
+<a href="index.html" id="stats-link" aria-label="View feedback statistics">Go Back</a>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Exhibition Feedback</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      user-select: none;
+      position: relative;
+    }
+
+    h1 {
+      margin: 0 0 0.5rem 0;
+      font-weight: 600;
+      color: #333;
+      font-size: 3.5rem;
+      animation: fadeInDown 0.8s ease forwards;
+    }
+
+    .feedback-container {
+      display: flex;
+      gap: 50px;
+      justify-content: center;
+      align-items: center;
+      animation: fadeInUp 1s ease forwards;
+    }
+
+    .emoji-wrapper {
+      cursor: pointer;
+      text-align: center;
+      color: #555;
+      user-select: none;
+      animation: float 3s ease-in-out infinite;
+      z-index: 1;  /* Ensure that the emoji wrapper stays clickable */
+    }
+
+    .emoji-wrapper:nth-child(1) { animation-delay: 0s; }
+    .emoji-wrapper:nth-child(2) { animation-delay: 1s; }
+    .emoji-wrapper:nth-child(3) { animation-delay: 1.5s; }
+    .emoji-wrapper:nth-child(4) { animation-delay: 2s; }
+
+    .emoji {
+      font-size: 10rem; 
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .emoji-wrapper:hover .emoji {
+      animation: wobble 0.6s ease-in-out;
+    }
+
+    .emoji.animate {
+      transform: scale(1.5);
+    }
+
+    .label {
+      margin-top: 1rem;
+      font-size: 2rem;
+      font-weight: 500;
+      color: #444;
+    }
+
+    #thankyou-screen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #fff;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    #thankyou-screen.show {
+      display: flex;
+    }
+
+    #thankyou-screen h2 {
+      font-size: 3.5rem;
+      margin: 0 0 1rem 0;
+      color: #2d7aee;
+    }
+
+    #thankyou-screen .selected-emoji {
+      font-size: 6rem;
+      margin-bottom: 1rem;
+      animation: popIn 0.5s ease forwards;
+    }
+
+    #thankyou-screen button {
+      padding: 1rem 3rem;
+      font-size: 1.5rem;
+      background-color: #2d7aee;
+      border: none;
+      color: white;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgb(45 122 238 / 0.5);
+      transition: background-color 0.3s ease;
+    }
+
+    #thankyou-screen button:hover {
+      background-color: #1b4fcc;
+    }
+
+    #stats-link {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      font-size: 0.9rem;
+      color: #999;
+      text-decoration: none;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+      user-select: none;
+    }
+
+    #stats-link:hover {
+      opacity: 1;
+    }
+
+    #watermark {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      font-size: 0.75rem;
+      color: rgba(0,0,0,0.1);
+      user-select: none;
+      pointer-events: none;
+      font-style: italic;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    @keyframes wobble {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(15deg); }
+      50% { transform: rotate(-15deg); }
+      75% { transform: rotate(10deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.5); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+  </style>
+</head>
+<body>
+  <h1>අපේ Stall එකට Feedback එකක් දෙන්න</h1>
+  <br><br><br><br>
+
+  <div class="feedback-container" role="list" aria-label="Feedback emojis">
+    <div class="emoji-wrapper" data-feedback="නියමයි" role="listitem" tabindex="0" aria-label="Loved it">
+      <div class="emoji" aria-hidden="true">🤩</div>
+      <div class="label">නියමයි</div>
+    </div>
+    <div class="emoji-wrapper" data-feedback="හොඳයි" role="listitem" tabindex="0" aria-label="Good">
+      <div class="emoji" aria-hidden="true">🙂</div>
+      <div class="label">හොඳයි</div>
+    </div>
+    <div class="emoji-wrapper" data-feedback="එපා උනා" role="listitem" tabindex="0" aria-label="Boring">
+      <div class="emoji" aria-hidden="true">🥱</div>
+      <div class="label">එපා උනා</div>
+    </div>
+    <div class="emoji-wrapper" data-feedback="හොඳ නැහැ" role="listitem" tabindex="0" aria-label="Not great">
+      <div class="emoji" aria-hidden="true">😣</div>
+      <div class="label">හොඳ නැහැ</div>
+    </div>
+  </div>
+
+  <div id="thankyou-screen" role="dialog" aria-modal="true" aria-labelledby="thankyou-message" aria-describedby="thankyou-desc">
+    <div class="selected-emoji" aria-hidden="true"></div>
+    <br>
+    <h2 id="thankyou-message">ඔබේ ප්‍රතිචාරයට ස්තූතියි!</h2>
+    <br>
+    <button id="go-back-btn" aria-label="Go back to feedback selection">තවත් ප්‍රතිචාරයක් ලබා දෙන්න</button>
+  </div>
+
+  <a href="feedback-stats.html" id="stats-link" aria-label="View feedback statistics">Stats</a>
+  <div id="watermark">© Hansaa Piyumali</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script>
+    const emojiWrappers = document.querySelectorAll('.emoji-wrapper');
+    const thankYouScreen = document.getElementById('thankyou-screen');
+    const selectedEmojiDisplay = thankYouScreen.querySelector('.selected-emoji');
+    const goBackBtn = document.getElementById('go-back-btn');
+    const feedbackContainer = document.querySelector('.feedback-container');
+    const heading = document.querySelector('h1');
+
+    function animateEmoji(emojiEl) {
+      emojiEl.classList.remove('animate');
+      void emojiEl.offsetWidth;
+      emojiEl.classList.add('animate');
+    }
+
+    function launchConfetti() {
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    }
+
+    emojiWrappers.forEach(wrapper => {
+      wrapper.addEventListener('click', () => {
+        const feedback = wrapper.getAttribute('data-feedback');
+        const emojiEl = wrapper.querySelector('.emoji');
+        animateEmoji(emojiEl);
+
+        fetch('submit-feedback.php', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ feedback })
+        }).then(res => res.json())
+          .then(data => {
+            if (data.status === 'success') {
+              selectedEmojiDisplay.textContent = emojiEl.textContent;
+              feedbackContainer.style.display = 'none';
+              heading.style.display = 'none';
+              thankYouScreen.classList.add('show');
+              launchConfetti();
+            } else {
+              alert('Failed to submit feedback. Please try again.');
+            }
+          }).catch(() => {
+            alert('Failed to submit feedback. Please try again.');
+          });
+      });
+    });
+
+    goBackBtn.addEventListener('click', () => {
+      thankYouScreen.classList.remove('show');
+      feedbackContainer.style.display = 'flex';
+      heading.style.display = 'block';
+      emojiWrappers.forEach(wrapper => {
+        const emoji = wrapper.querySelector('.emoji');
+        emoji.classList.remove('animate');
+      });
+    });
+  </script>
+</body>
+</html>
